@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Alarum.app klient</title>
+  </head>
+  <style>
+    #credentials {
+      display: block;
+    }
+
+    #alert {
+      display: none;
+    }
+
+    video {
+      object-fit: cover;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      filter: opacity(0.2);
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background-color: #121212;
+      color: white;
+    }
+
+    .viewport-header {
+      position: relative;
+      height: 100vh;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+  </style>
+  <body>
+    <div id="credentials">
+      <label>Meno:</label><br />
+      <input type="text" id="credentials-name" /><br />
+      <label>Názov skupiny:</label><br />
+      <input type="text" id="credentials-room" /><br />
+      <label>Prístupové heslo:</label><br />
+      <input type="password" id="credentials-password" /><br />
+      <button>Uložiť</button>
+    </div>
+    <div id="alert">
+      <video
+        src="./assets/video.mp4"
+        poster="./assets/poster.jpg"
+        autoplay
+        loop
+        playsinline
+        muted
+      ></video>
+
+      <div class="viewport-header">
+        <h1>Poplach!</h1>
+        <span id="message"></span>
+        <textarea
+          id="customMessage"
+          rows="5"
+          cols="30"
+          placeholder="Vlastná správa..."
+        ></textarea>
+        <div>
+          <button
+            onclick="answer(true, document.getElementById('customMessage').value)"
+          >
+            Prídem
+          </button>
+          <button
+            onclick="answer(false, document.getElementById('customMessage').value)"
+          >
+            Neprídem
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let socket = null;
+    const connect = () => {
+      socket = new WebSocket("ws://68.183.71.163");
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const ping = () => {
+        if (connected) socket.send(JSON.stringify("ping"));
+      };
+
+      let connected = false;
+      let wsPingInterval = null;
+      let wsReconnectTimeout = null;
+
+      if (
+        urlParams.get("meno") &&
+        urlParams.get("nazovSkupiny") &&
+        urlParams.get("heslo")
+      ) {
+        document.getElementById("credentials-name").value = urlParams.get(
+          "meno"
+        );
+        document.getElementById("credentials-room").value = urlParams.get(
+          "nazovSkupiny"
+        );
+        document.getElementById("credentials-password").value = urlParams.get(
+          "heslo"
+        );
+
+        socket.onopen = () => {
+          socket.send(
+            JSON.stringify({
+              action: "join",
+              name: urlParams.get("meno"),
+              room: urlParams.get("nazovSkupiny"),
+              password: urlParams.get("heslo"),
+            })
+          );
+          connected = true;
+          clearInterval(wsPingInterval);
+          wsPingInterval = setInterval(ping, 25000);
+        };
+
+        socket.onmessage = (message) => {
+          const json = JSON.parse(message.data);
+          switch (json.action) {
+            case "alert": {
+              document.getElementById("credentials").style.display = "none";
+              document.getElementById("alert").style.display = "block";
+              document.getElementById("message").innerHTML = `${json.message}`;
+            }
+          }
+        };
+
+        socket.onclose = () => {
+          connected = false;
+          console.log(
+            "Socket is closed. Reconnect will be attempted in 5 second."
+          );
+          clearTimeout(wsReconnectTimeout);
+          wsReconnectTimeout = setTimeout(() => {
+            console.log("Trying to reconnect...");
+            socket.close();
+            connect();
+          }, 5000);
+        };
+
+        socket.onerror = () => {
+          connected = false;
+          socket.close();
+        };
+      }
+    };
+    connect();
+
+    const answer = (participation, message) => {
+      socket.send(
+        JSON.stringify({
+          action: "answer",
+          participation: participation,
+          message: `${message}`,
+        })
+      );
+      document.getElementById("alert").style.display = "none";
+      document.getElementById("credentials").style.display = "block";
+    };
+  </script>
+</html>
