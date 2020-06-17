@@ -1,0 +1,18 @@
+<script>
+    const urls = [
+        'http://admin.knitt.me/klient.html?meno=Oliver&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=David&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Marek&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Katka&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Matus&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Peter&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Tomas&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Martin&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Samo&nazovSkupiny=testovaciaSkupina&heslo=silneheslo',
+        'http://admin.knitt.me/klient.html?meno=Kristian&nazovSkupiny=testovaciaSkupina&heslo=silneheslo'
+    ]
+    urls.forEach((e, i) => {
+        window.open(e, `klient-${i + 1}`);
+    })
+    window.close()
+</script>
