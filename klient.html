@@ -93,9 +93,9 @@
       socket = new WebSocket("ws://68.183.71.163");
       const urlParams = new URLSearchParams(window.location.search);
 
-      const ping = () => {
-        if (connected) socket.send(JSON.stringify("ping"));
-      };
+//       const ping = () => {
+//         if (connected) socket.send(JSON.stringify("ping"));
+//       };
 
       let connected = false;
       let wsPingInterval = null;
@@ -126,8 +126,8 @@
             })
           );
           connected = true;
-          clearInterval(wsPingInterval);
-          wsPingInterval = setInterval(ping, 25000);
+//           clearInterval(wsPingInterval);
+//           wsPingInterval = setInterval(ping, 25000);
         };
 
         socket.onmessage = (message) => {
@@ -137,6 +137,9 @@
               document.getElementById("credentials").style.display = "none";
               document.getElementById("alert").style.display = "block";
               document.getElementById("message").innerHTML = `${json.message}`;
+            }
+            case "ping": {
+              socket.send(JSON.stringify({action: 'pong'}))
             }
           }
         };
