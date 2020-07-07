@@ -117,14 +117,26 @@
         );
 
         socket.onopen = () => {
+          if (localStorage.getItem('token')) 
           socket.send(
             JSON.stringify({
               action: "join",
               name: urlParams.get("meno"),
               room: urlParams.get("nazovSkupiny"),
               password: urlParams.get("heslo"),
+              token: localStorage.getItem('token')
             })
           );
+          else
+          socket.send(
+            JSON.stringify({
+              action: "join",
+              name: urlParams.get("meno"),
+              room: urlParams.get("nazovSkupiny"),
+              password: urlParams.get("heslo")
+            })
+          );
+          
           connected = true;
 //           clearInterval(wsPingInterval);
 //           wsPingInterval = setInterval(ping, 25000);
@@ -134,6 +146,9 @@
           const json = JSON.parse(message.data);
           console.log(json)
           switch (json.action) {
+            case "token": {
+              localStorage.setItem('token', json.token);
+            }
             case "alert": {
               document.getElementById("credentials").style.display = "none";
               document.getElementById("alert").style.display = "block";
