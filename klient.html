@@ -132,6 +132,7 @@
 
         socket.onmessage = (message) => {
           const json = JSON.parse(message.data);
+          console.log(json)
           switch (json.action) {
             case "alert": {
               document.getElementById("credentials").style.display = "none";
