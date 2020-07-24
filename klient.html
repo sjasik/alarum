@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Alarum.app klient</title>
+    <title>HASIME.SK - Web klient</title>
   </head>
   <style>
     #credentials {
@@ -90,12 +90,8 @@
   <script>
     let socket = null;
     const connect = () => {
-      socket = new WebSocket("ws://68.183.71.163");
+      socket = new WebSocket("wss://api.ws1.hasime.sk");
       const urlParams = new URLSearchParams(window.location.search);
-
-//       const ping = () => {
-//         if (connected) socket.send(JSON.stringify("ping"));
-//       };
 
       let connected = false;
       let wsPingInterval = null;
@@ -138,8 +134,6 @@
           );
           
           connected = true;
-//           clearInterval(wsPingInterval);
-//           wsPingInterval = setInterval(ping, 25000);
         };
 
         socket.onmessage = (message) => {
